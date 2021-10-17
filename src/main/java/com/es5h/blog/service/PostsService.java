@@ -1,5 +1,6 @@
 package com.es5h.blog.service;
 
+import com.es5h.blog.controller.dto.PostsListResponseDto;
 import com.es5h.blog.controller.dto.PostsResponseDto;
 import com.es5h.blog.controller.dto.PostsSaveRequestDto;
 import com.es5h.blog.controller.dto.PostsUpdateRequestDto;
@@ -9,6 +10,9 @@ import com.es5h.blog.util.mapstruct.PostsMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -31,5 +35,10 @@ public class PostsService {
     public PostsResponseDto readPost(Long id){
         Posts entity=postsRepository.findById(id).orElseThrow(()->new IllegalArgumentException("해당 게시글이 없습니다"));
         return new PostsResponseDto(entity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostsListResponseDto> readPostLists(){
+        return postsRepository.findAllByOrderByPostSeqDesc().stream().map(PostsListResponseDto::new).collect(Collectors.toList());
     }
 }
